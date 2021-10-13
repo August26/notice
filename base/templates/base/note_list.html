@@ -1,0 +1,68 @@
+{% extends 'base/main.html' %} {% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+    var content = document.getElementsByClassName("container")[0];
+    content.style.setProperty("max-width", "100%", "important")
+    document.body.style.setProperty("padding-top", "0", "important");
+</script>
+
+<div class="header-bar">
+    <div>
+        <h1>Hello {{request.user|title}}</h1>
+        <h3 style="margin:0">You have <i>{{count}}</i> note{{ count|pluralize:"s" }}</h3>
+    </div>
+
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'logout' %}">Logout</a> {% else %}
+    <a href="{% url 'login' %}">Login</a> {% endif %}
+</div>
+
+
+<div id="search-add-wrapper">
+    <form method="GET" style="display: flex;">
+        <input type='text' name='search-area' placeholder="Search your note" value="{{search_input}}">
+        <input class="button" type="submit" value='Search'>
+    </form>
+    {% if notes|length > 0 %}
+    <a id="add-link" href="{% url 'note-create' %}">&#x2b;</a>
+    {% endif %}
+</div>
+
+
+<!-- Hidden form. Form submits new item positions -->
+<form style="display: none;" id="reorderForm" method="post" action="{% url 'note-reorder' %}">
+    {% csrf_token %}
+    <input type="hidden" id="positionInput" name="position">
+</form>
+
+
+<div id="notelist" class="note-items-wrapper">
+    <ul>
+    {% for note in notes %}
+    <!--<div class="note-wrapper" data-position="{{note.pk}}">
+        <div class="note-title">
+            <i>{{note.created|date:"Y-m-d"}}</i>
+            <a href="{% url 'note-update' note.id %}">{{note}}</a>
+        </div>
+        <div class="note-controls">
+            <a class="delete-link" href="{% url 'note-delete' note.id %}">&#215;</a>
+        </div>
+    </div> -->
+    <li class="handle" data-position="{{note.pk}}">
+        <a href="{% url 'note-update' note.id %}" >
+          <h2>{{note}}</h2>
+          <i>{{note.created|date:"Y-m-d"}}</i>
+        </a>
+    </li>
+
+    {% empty %}
+    <div style="text-align: center; padding-bottom: 10px; line-height: 1em;">
+        <h3>No new notes are created.</h3>
+        <h3>Create a <a style="text-decoration: none; color: #e53935;" href="{% url 'note-create' %}">New note</a> ! </h3>
+    </div>
+    {% endfor %}
+    </ul>
+</div>
+
+{% endblock content %}

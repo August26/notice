@@ -1,0 +1,20 @@
+{% extends 'base/main.html' %}
+{% block content %}
+
+<div class="header-bar">
+    <a href="{% url 'notes' %}">&#8592; Back</a>
+</div>
+
+<div class="card-body">
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input class="button" type="submit" value="Submit">
+        {% if form.instance.id %}
+            <a class="delete-link" href="{% url 'note-delete' form.instance.id %}">Delete</a>
+        {% endif %}
+    </form>
+</div>
+
+
+{% endblock content %}
